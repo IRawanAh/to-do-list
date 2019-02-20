@@ -40,12 +40,10 @@ class MainPage extends Component {
 
             /// TO DO 
             console.log("\n\n\n\n\n ******", state)
-            if (state.list.length > 0) {
-                this.setState({
-                    list: state.list
+            this.setState({
+                list: state.list
 
-                });
-            }
+            });
             //console.log('DATA RETRIEVED ' + " - " + state.list[0].task)
             state.list.map((obj) => { console.log('DATA RETRIEVED ' + " - " + obj.task) })
             console.log('DATA RETRIEVED ' + JSON.stringify(state));
@@ -63,13 +61,13 @@ class MainPage extends Component {
         this.getUserData();
 
     }
-    // componentDidUpdate(prevProps, prevState) {
-    //     // check on previous state
-    //     // only write when it's different with the new state
-    //     if (prevState !== this.state) {
-    //         this.writeUserData();
-    //     }
-    // }
+    componentDidUpdate(prevProps, prevState) {
+        // check on previous state
+        // only write when it's different with the new state
+        if (prevState !== this.state) {
+            this.writeUserData();
+        }
+    }
     writeUserData = () => {
         console.log("this.state\n\n\n\n\n", this.state)
         Firebase.database().ref('/').set(this.state);
@@ -127,7 +125,6 @@ class MainPage extends Component {
         })
     }
     clear = () => { this.setState({ list: [] }) }
-
     adding = (event) => {
         //get the value
         const newData = event.target.value;
@@ -145,23 +142,20 @@ class MainPage extends Component {
     }
 
     clicked = (event) => {
-        console.log("\n\n\n\n &&&&&&&&&&& ADDING NEW TASK")
-        // event.preventDefault();
+        event.preventDefault();
         const copy = this.state.list.slice(0);
         copy.push(this.state.newItem);
-
         const originalState = this.state.newItem;
         // make a copy of the original state
         const copy2 = Object.assign({}, originalState)
         copy2.task = '';
-
         this.setState({
             list: copy,
             newItem: copy2
-        })
 
-        console.log("clicked\n\n\n", copy);
+        })
         this.writeUserData();
+        console.log("clicked" + this.state.list);
 
     }
 
@@ -205,28 +199,28 @@ class MainPage extends Component {
         // this.itemComponents = this.state.list.map((item) => { return <Items item={item} /> })
         return (
             <div>
-                <div className="newTask">
+                <div class="newTask">
                     <input type="text" id="myInput" placeholder="New task..." value={this.state.newItem.task} onChange={this.adding}></input>
                     <DatePicker
-                        className='date'
+                        class='date'
                         placeholderText="Click to select a date"
                         minDate={new Date()}
                         dateFormat="yyyy/MM/dd"
-                        selected={new Date(this.state.newItem.date)}
+                        selected={this.state.newItem.date}
                         onChange={this.handleChange}
                     />
                     <button onClick={this.clicked}>Add</button>
                 </div >
-                <div className="display">
-                    <div className='list' id="today">
+                <div class="display">
+                    <div class='list' id="today">
                         <h1>Today</h1>
                         {today}
                     </div>
-                    <div className='list' id="week">
+                    <div class='list' id="week">
                         <h1>This Week</h1>
                         {week}
                     </div>
-                    <div className='list' id="month">
+                    <div class='list' id="month">
                         <h1>This Month<div></div> </h1>
                         {month}
                     </div>
