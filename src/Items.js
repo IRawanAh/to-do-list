@@ -28,7 +28,9 @@ class Items extends Component {
         // console.log('delete test', this.props)
         this.props.deleted(id);
     }
-
+    edit = () => {
+        console.log("ssss");
+    }
     render() {
         if (this.props.item.completed == true) {
             this.state.checked2 = "checked";
@@ -38,7 +40,7 @@ class Items extends Component {
         return (
             <div className={this.state.delete} id="task" >
                 <input type="checkbox" checked={this.state.checked2} onClick={(event) => this.checkboxChecked(this.props.id)}></input>
-                <label className={this.state.checked2} contentEditable="true"  > {this.props.item.task}</label>
+                <label className={this.state.checked2} contentEditable="true" onChange={this.edit}  > {this.props.item.task}</label>
                 <label onClick={(event) => this.deleted(this.props.id)} className="deleteItem">X</label>
 
             </div>

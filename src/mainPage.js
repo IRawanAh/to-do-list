@@ -4,34 +4,86 @@ import './App.css';
 import DatePicker from "react-datepicker";
 import "react-datepicker/dist/react-datepicker.css";
 import * as firebase from 'firebase';
-
-class MainPage extends Component {
-    state = {
-        newItem: {
-            task: '',
-            completed: false,
-            date: new Date()
-        },
-
-        list: [
-
-        ]
-        ,
-        speed: 10
+//import app from 'firebase/app';
+//import { DB_CONFIG } from './config';
+import Firebase from 'firebase';
+const config = {
+    firebase: {
+        apiKey: "AIzaSyAgBvGKlPEySB6vCWVkyO5OnRiVP3pzgps",
+        authDomain: "todolist-692de.firebaseapp.com",
+        databaseURL: "https://todolist-692de.firebaseio.com",
     }
-    componentDidMount() {
-        const rootRef = firebase.database().ref().child('react');
-        const speedRef = rootRef.child('speed');
-        speedRef.on('value', snap => {
-            this.setState({
-                speed: snap.val()
-            });
+}
+class MainPage extends Component {
+    // this.app = firebase.initializeApp(DB_CONFIG);
+    constructor(props) {
+        super(props);
+        //Firebase.initializeApp(config.firebase);
+        this.state = {
+            newItem: {
+                task: '',
+                completed: false,
+                date: new Date().getTime()
+            },
+
+            list: [
+
+            ]
+
+        }
+    }
+
+    getUserData = () => {
+        let ref = Firebase.database().ref('/');
+        ref.on('value', snapshot => {
+            const state = snapshot.val();
+
+            /// TO DO 
+            console.log("\n\n\n\n\n ******", state)
+            if (state.list.length > 0) {
+                this.setState({
+                    list: state.list
+
+                });
+            }
+            //console.log('DATA RETRIEVED ' + " - " + state.list[0].task)
+            state.list.map((obj) => { console.log('DATA RETRIEVED ' + " - " + obj.task) })
+            console.log('DATA RETRIEVED ' + JSON.stringify(state));
         });
     }
+
+    componentDidMount() {
+        // const rootRef = firebase.database().ref().child('react');
+        // const speedRef = rootRef.child('speed');
+        // speedRef.on('value', snap => {
+        //     this.setState({
+        //         speed: snap.val()
+        //     });
+        // });
+        this.getUserData();
+
+    }
+    componentDidUpdate(prevProps, prevState) {
+        // check on previous state
+        // only write when it's different with the new state
+        if (prevState !== this.state) {
+            this.writeUserData();
+        }
+    }
+    writeUserData = () => {
+        console.log("this.state\n\n\n\n\n", this.state)
+        Firebase.database().ref('/').set(this.state);
+
+        console.log('DATA SAVED');
+    }
     handleChange = (date) => {
+        const newDate = new Date(date)
+        console.log(newDate.getTime())
+
+        console.log("this.state.newItem\n\n\n ****", date, this.state.newItem)
         const originalState = this.state.newItem;
         const copy = Object.assign({}, originalState)
-        copy.date = date;
+        copy.date = newDate.getTime();
         this.setState({
             newItem: copy
         })
@@ -104,12 +156,15 @@ class MainPage extends Component {
             newItem: copy2
 
         })
+        this.writeUserData();
+        console.log("clicked" + this.state.list);
 
     }
 
     render() {
         console.log(this.state);
         // const items = this.itemComponents()
+        // this.writeUserData();
 
         const newList = this.state.list.map((item, index) => {
             return <Items item={item} completed={this.completed} deleted={this.deleted} id={index} />
@@ -117,7 +172,7 @@ class MainPage extends Component {
         })
         const today = this.state.list.map((item, index) => {
             var todayDate = new Date;
-            var timeDiff = Math.abs(todayDate.getTime() - item.date.getTime());
+            var timeDiff = Math.abs(todayDate.getTime() - item.date);
             var diffDays = Math.ceil(timeDiff / (1000 * 3600 * 24));
             if (diffDays == 1) {
                 return <Items item={item} completed={this.completed} deleted={this.deleted} id={index} />
@@ -125,7 +180,7 @@ class MainPage extends Component {
         })
         const week = this.state.list.map((item, index) => {
             var todayDate = new Date;
-            var timeDiff = Math.abs(todayDate.getTime() - item.date.getTime());
+            var timeDiff = Math.abs(todayDate.getTime() - item.date);
             var diffDays = Math.ceil(timeDiff / (1000 * 3600 * 24));
             if (diffDays > 1 && diffDays < 7) {
                 return <Items item={item} completed={this.completed} deleted={this.deleted} id={index} />
@@ -133,7 +188,7 @@ class MainPage extends Component {
         })
         const month = this.state.list.map((item, index) => {
             var todayDate = new Date;
-            var timeDiff = Math.abs(todayDate.getTime() - item.date.getTime());
+            var timeDiff = Math.abs(todayDate.getTime() - item.date);
             var diffDays = Math.ceil(timeDiff / (1000 * 3600 * 24));
             if (diffDays > 7 && diffDays < 31) {
                 return <Items item={item} completed={this.completed} deleted={this.deleted} id={index} />
@@ -158,7 +213,6 @@ class MainPage extends Component {
                     />
                     <button onClick={this.clicked}>Add</button>
                 </div >
-                <h1>{this.state.speed}</h1>
                 <div class="display">
                     <div class='list' id="today">
                         <h1>Today</h1>
