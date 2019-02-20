@@ -27,7 +27,6 @@ class MainPage extends Component {
             },
 
             list: [
-
             ]
 
         }
@@ -40,10 +39,13 @@ class MainPage extends Component {
 
             /// TO DO 
             console.log("\n\n\n\n\n ******", state)
+
             this.setState({
                 list: state.list
 
             });
+
+
             //console.log('DATA RETRIEVED ' + " - " + state.list[0].task)
             state.list.map((obj) => { console.log('DATA RETRIEVED ' + " - " + obj.task) })
             console.log('DATA RETRIEVED ' + JSON.stringify(state));
@@ -58,19 +60,20 @@ class MainPage extends Component {
         //         speed: snap.val()
         //     });
         // });
-        this.getUserData();
+        //    this.getUserData();
 
     }
     componentDidUpdate(prevProps, prevState) {
         // check on previous state
         // only write when it's different with the new state
         if (prevState !== this.state) {
-            this.writeUserData();
+            console.log("componentDidUpdate prevProps" + JSON.stringify(prevProps) + "prevState " + JSON.stringify(prevState))
+            // this.writeUserData();
         }
     }
     writeUserData = () => {
         console.log("this.state\n\n\n\n\n", this.state)
-        Firebase.database().ref('/').set(this.state);
+        //Firebase.database().ref('/').set(this.state);
 
         console.log('DATA SAVED');
     }

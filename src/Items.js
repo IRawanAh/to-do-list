@@ -41,7 +41,7 @@ class Items extends Component {
             <div className={this.state.delete} id="task" >
                 <input type="checkbox" checked={this.state.checked2} onClick={(event) => this.checkboxChecked(this.props.id)}></input>
                 <label className={this.state.checked2} contentEditable="true" onChange={this.edit}  > {this.props.item.task}</label>
-                <label onClick={(event) => this.deleted(this.props.id)} className="deleteItem">X</label>
+                <label onClick={(event) => this.deleted(this.props.id)} className="deleteItem">✘</label>
 
             </div>
         );

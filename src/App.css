@@ -9,6 +9,7 @@ input[type='checkbox']:after{
   height: 18px;
   margin-top: -4px;
   margin-left: -4px;
+  margin-bottom: -4px;
   border: 1px solid rgb(192,192,192);
   border-radius: 0.25em;
   background: rgb(224,224,224);
@@ -17,10 +18,14 @@ input[type='checkbox']:after{
 input[type='checkbox']:checked:after {
 width: 15px;
   height: 15px;
-  border: 3px solid red;
+  border: 3px solid black;
 }
+
+
+
 .deleteItem{
   float: right;
+  margin-right: 10px;
 }
 input[type=text] {
   width: 50%;
@@ -38,8 +43,12 @@ input[type=text] {
 div #task{
   font-size: 25px;
   width: 99%;
-  
+  padding-left:4px;
+  padding-bottom: 4px;
   border-bottom: 1px solid #555;
+}
+#task label{
+  margin-left: 10px;
 }
 #task:hover {
   background-color: #ddd;
@@ -86,6 +95,7 @@ text-align: center;
 }
 .list{
   padding-top:0;
+  padding-bottom: 50px;
   margin: 20px;
   border-radius: 50px;
   border : 1px solid gray;
