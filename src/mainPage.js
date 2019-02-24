@@ -119,7 +119,9 @@ class MainPage extends Component {
     }
 
     // Claer the list
-    clear = () => { this.setState({ list: [] }) }
+    clear = () => {
+        // this.setState({ list: [] }) 
+    }
 
     // get the value from the input field
     adding = (event) => {
