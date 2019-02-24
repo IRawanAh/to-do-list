@@ -3,9 +3,6 @@ import Items from './Items';
 import './App.css';
 import DatePicker from "react-datepicker";
 import "react-datepicker/dist/react-datepicker.css";
-import * as firebase from 'firebase';
-//import app from 'firebase/app';
-//import { DB_CONFIG } from './config';
 import Firebase from 'firebase';
 const config = {
     firebase: {
@@ -15,10 +12,9 @@ const config = {
     }
 }
 class MainPage extends Component {
-    // this.app = firebase.initializeApp(DB_CONFIG);
     constructor(props) {
         super(props);
-        //Firebase.initializeApp(config.firebase);
+        Firebase.initializeApp(config.firebase);
         this.state = {
             newItem: {
                 task: '',
@@ -32,56 +28,50 @@ class MainPage extends Component {
         }
     }
 
+    // write the data from firebase and assign it to the state list 
     getUserData = () => {
         let ref = Firebase.database().ref('/');
         ref.on('value', snapshot => {
             const state = snapshot.val();
 
             /// TO DO 
-            console.log("\n\n\n\n\n ******", state)
+            console.log("\n\n\n\n\n ******", state.list.length)
+            if (state.list.length > 0) {
 
-            this.setState({
-                list: state.list
+                this.setState({
+                    list: state.list
 
-            });
-
-
-            //console.log('DATA RETRIEVED ' + " - " + state.list[0].task)
-            state.list.map((obj) => { console.log('DATA RETRIEVED ' + " - " + obj.task) })
+                });
+            }
             console.log('DATA RETRIEVED ' + JSON.stringify(state));
         });
     }
 
     componentDidMount() {
-        // const rootRef = firebase.database().ref().child('react');
-        // const speedRef = rootRef.child('speed');
-        // speedRef.on('value', snap => {
-        //     this.setState({
-        //         speed: snap.val()
-        //     });
-        // });
-        //    this.getUserData();
 
+        this.getUserData();
     }
+
     componentDidUpdate(prevProps, prevState) {
         // check on previous state
         // only write when it's different with the new state
         if (prevState !== this.state) {
             console.log("componentDidUpdate prevProps" + JSON.stringify(prevProps) + "prevState " + JSON.stringify(prevState))
-            // this.writeUserData();
+            this.writeUserData();
         }
     }
+
+    // set the data in firebase 
     writeUserData = () => {
-        console.log("this.state\n\n\n\n\n", this.state)
-        //Firebase.database().ref('/').set(this.state);
+        Firebase.database().ref('/').set(this.state);
 
         console.log('DATA SAVED');
     }
+
+    // get the date from the user
     handleChange = (date) => {
         const newDate = new Date(date)
         console.log(newDate.getTime())
-
-        console.log("this.state.newItem\n\n\n ****", date, this.state.newItem)
         const originalState = this.state.newItem;
         const copy = Object.assign({}, originalState)
         copy.date = newDate.getTime();
@@ -90,6 +80,7 @@ class MainPage extends Component {
         })
     }
 
+    // set the completed condition
     completed = (id) => {
         const copy = this.state.list.slice(0);
 
@@ -98,14 +89,13 @@ class MainPage extends Component {
         } else {
             copy[id].completed = true;
         }
-        //copy.splice(i,1);
         this.setState({
             list: copy,
 
         })
-        // console.log(this.state.list[1].completed);
     }
 
+    // delete one task from the child class by the index 
     deleted = (id) => {
         let copy = this.state.list.slice(0);
         copy.splice(id, 1);
@@ -115,9 +105,9 @@ class MainPage extends Component {
         })
         console.log(id);
     }
-    // itemComponents = () => {
-    //     return this.state.list.map((item, index) => { return <Items item={item} deleted={this.deleted} completed={this.completed} id={index} /> })
-    // }
+
+
+    // check if the task completed and delete the completed tasks 
     clearCompletedTasks = () => {
         console.log("clear completed tasks");
         const copy = this.state.list.filter((item) => item.completed == false);
@@ -127,7 +117,11 @@ class MainPage extends Component {
             list: copy
         })
     }
+
+    // Claer the list
     clear = () => { this.setState({ list: [] }) }
+
+    // get the value from the input field
     adding = (event) => {
         //get the value
         const newData = event.target.value;
@@ -135,8 +129,6 @@ class MainPage extends Component {
         const originalState = this.state.newItem;
         // make a copy of the original state
         const copy = Object.assign({}, originalState)
-        // get key from name of input
-        // const key = event.target.name;
         // update the copy with the data the user typed 
         copy.task = newData;
         // update the state with the new copy 
@@ -144,12 +136,12 @@ class MainPage extends Component {
         console.log(copy)
     }
 
+    // when the button clicked add the task
     clicked = (event) => {
         event.preventDefault();
         const copy = this.state.list.slice(0);
         copy.push(this.state.newItem);
         const originalState = this.state.newItem;
-        // make a copy of the original state
         const copy2 = Object.assign({}, originalState)
         copy2.task = '';
         this.setState({
@@ -164,13 +156,13 @@ class MainPage extends Component {
 
     render() {
         console.log(this.state);
-        // const items = this.itemComponents()
-        // this.writeUserData();
 
         const newList = this.state.list.map((item, index) => {
             return <Items item={item} completed={this.completed} deleted={this.deleted} id={index} />
 
         })
+
+        // today tasks
         const today = this.state.list.map((item, index) => {
             var todayDate = new Date;
             var timeDiff = Math.abs(todayDate.getTime() - item.date);
@@ -179,6 +171,8 @@ class MainPage extends Component {
                 return <Items item={item} completed={this.completed} deleted={this.deleted} id={index} />
             }
         })
+
+        // this week tasks
         const week = this.state.list.map((item, index) => {
             var todayDate = new Date;
             var timeDiff = Math.abs(todayDate.getTime() - item.date);
@@ -187,6 +181,7 @@ class MainPage extends Component {
                 return <Items item={item} completed={this.completed} deleted={this.deleted} id={index} />
             }
         })
+        // this month tasks
         const month = this.state.list.map((item, index) => {
             var todayDate = new Date;
             var timeDiff = Math.abs(todayDate.getTime() - item.date);
@@ -199,7 +194,6 @@ class MainPage extends Component {
 
 
 
-        // this.itemComponents = this.state.list.map((item) => { return <Items item={item} /> })
         return (
             <div>
                 <div class="newTask">
@@ -207,7 +201,7 @@ class MainPage extends Component {
                     <DatePicker
                         class='date'
                         placeholderText="Click to select a date"
-                        minDate={new Date()}
+                        //  minDate={new Date()}
                         dateFormat="yyyy/MM/dd"
                         selected={this.state.newItem.date}
                         onChange={this.handleChange}
