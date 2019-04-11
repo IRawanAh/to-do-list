@@ -159,11 +159,6 @@ class MainPage extends Component {
     render() {
         console.log(this.state);
 
-        const newList = this.state.list.map((item, index) => {
-            return <Items item={item} completed={this.completed} deleted={this.deleted} id={index} />
-
-        })
-
         // today tasks
         const today = this.state.list.map((item, index) => {
             var todayDate = new Date;
@@ -203,7 +198,7 @@ class MainPage extends Component {
                     <DatePicker
                         class='date'
                         placeholderText="Click to select a date"
-                        //  minDate={new Date()}
+                        minDate={new Date()}
                         dateFormat="yyyy/MM/dd"
                         selected={this.state.newItem.date}
                         onChange={this.handleChange}
@@ -225,7 +220,7 @@ class MainPage extends Component {
                     </div>
                 </div>
                 <footer>
-                    <button onClick={this.clear}>Clear</button>
+
                     <button onClick={this.clearCompletedTasks}> Clear completed tasks</button>
                 </footer>
                 <br />
